@@ -14,9 +14,19 @@
                 text-align: center;
             }
 
+            .avatar {
+                display: block;
+                width: 100px;
+                height: 100px;
+                margin: 0 auto 25px;
+                -webkit-border-radius: 50%;
+                -moz-border-radius: 50%;
+                border-radius: 50%;
+            }
+
             .qr_login {
                 display: inline-block;
-                width: 160px;
+                width: 180px;
                 border-right: solid 1px #DDD;
                 text-align: center;
                 font-size: 14px;
@@ -26,18 +36,19 @@
 
             .qr_login p {
                 margin: 5px 0;
+                line-height: 14px;
             }
 
             .qr_area {
                 display: inline-block;
-                width: 80px;
-                height: 80px;
+                width: 100px;
+                height: 100px;
                 overflow: hidden;
             }
 
             .qrcode {
-                width: 80px;
-                height: 80px;
+                width: 100px;
+                height: 100px;
                 margin: 0 auto;
                 cursor: pointer;
             }
@@ -46,10 +57,10 @@
             .qr_invalid {
                 display: none;
                 position: relative;
-                top: -80px;
-                width: 80px;
-                height: 80px;
-                margin-bottom: -80px;
+                top: -100px;
+                width: 100px;
+                height: 100px;
+                margin-bottom: -100px;
                 text-align: center;
                 background: rgba(0,0,0,.25);
                 cursor: pointer;
@@ -61,7 +72,7 @@
                 margin: -5px 0 0;
                 overflow: hidden;
                 font-size: 60px;
-                line-height: 80px;
+                line-height: 100px;
             }
 
             .login_success .fa-check {
@@ -76,7 +87,7 @@
                 display: inline-block;
                 padding-left: 40px;
                 text-align: left;
-                line-height: 2.25em;
+                line-height: 2em;
                 vertical-align: middle;
                 cursor: default;
             }
@@ -98,6 +109,33 @@
 
             .alacarte form input[type=text] {
                 width: 20em;
+            }
+
+            .man {
+                margin-top: 100px;
+            }
+
+            a,
+            a:link {
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                color: #4285F4;
+                cursor: pointer;
+            }
+
+            a:focus {
+                outline: none;
+                outline-style: none;
+                -moz-outline-style: none;
+            }
+
+            a::-moz-focus-inner {
+                border: 0;
+            }
+
+            a:hover {
+                text-decoration: underline;
             }
         </style>
         <link href="/static/css/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -141,7 +179,7 @@
                     <p>
                         <label for="ft">
                             <strong>导出格式</strong>
-                            <input type="radio" id="ft_xlsx" name="ft" value="xls" checked="checked" />Excel (.xls)&nbsp;
+                            <input type="radio" id="ft_xls" name="ft" value="xls" checked="checked" />Excel (.xls)&nbsp;
                             <input type="radio" id="ft_csv" name="ft" value="csv" />CSV (UTF-8)
                         </label>
                     </p>
