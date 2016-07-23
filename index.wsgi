@@ -58,7 +58,8 @@ def getQRCode():
         url = 'http://ptlogin2.qq.com/ptqrshow?appid=715030901&e=2&l=M&s=3&d=72&v=4&t=%.16f&daid=73' % (random())
         res = session.get(url, timeout=200)
         response.set_header('Content-Type', 'image/png')
-        response.add_header('Cache-Control', 'private')
+        response.add_header('Cache-Control', 'no-cache, no-store')
+        response.add_header('Pragma', 'no-cache')
         mc = pylibmc.Client()
         mc.set(uid_session, session)
         return res
