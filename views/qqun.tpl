@@ -19,13 +19,13 @@
                 width: 160px;
                 border-right: solid 1px #DDD;
                 text-align: center;
-                font-size: 12px;
+                font-size: 14px;
                 vertical-align: middle;
                 color: #666;
             }
 
-            .qr_login p, .alacarte p {
-                margin: 0;
+            .qr_login p {
+                margin: 5px 0;
             }
 
             .qr_area {
@@ -81,6 +81,10 @@
                 cursor: default;
             }
 
+            .alacarte p {
+                margin: 0;
+            }
+
             .alacarte strong {
                 font-style: normal;
                 font-weight: 600;
@@ -132,6 +136,13 @@
                             <input type="radio" id="pn_10" name="pn" value="10" />80&nbsp;&nbsp;
                             <input type="radio" id="pn_15" name="pn" value="15" />120&nbsp;&nbsp;
                             <input type="radio" id="pn_20" name="pn" value="20" />160
+                        </label>
+                    </p>
+                    <p>
+                        <label for="ft">
+                            <strong>导出格式</strong>
+                            <input type="radio" id="ft_xlsx" name="ft" value="xls" checked="checked" />Excel (.xls)&nbsp;
+                            <input type="radio" id="ft_csv" name="ft" value="csv" />CSV (UTF-8)
                         </label>
                     </p>
                     <p>

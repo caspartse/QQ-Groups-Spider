@@ -19,6 +19,7 @@ import pylibmc
 from time import time
 import simplejson as json
 from io import BytesIO
+import pyexcel as pe
 import csv
 
 
@@ -108,6 +109,7 @@ def genbkn(skey):
 def qqunSearch():
     st = request.forms.get('st')
     pn = int(request.forms.get('pn'))
+    ft = request.forms.get('ft')
     kw = request.forms.get('kw').strip()
     if not kw:
         redirect('http://yourdomain.com/qqun')
@@ -136,11 +138,17 @@ def qqunSearch():
         if len(groups) == 1:
             redirect('http://yourdomain.com/qqun')
     f = BytesIO()
-    writer = csv.writer(f, dialect='excel')
-    writer.writerows(groups)
-    response.set_header('Content-Type', 'text/csv; charset=UTF-8')
-    filename = kw.replace(' ', '_') + '.csv'
-    response.add_header('Content-Disposition', 'attachment; filename=' + filename)
+    if ft == 'xls':
+        sheet = pe.Sheet(groups)
+        f = sheet.save_to_memory('xls', f)
+        response.set_header('Content-Type', 'application/vnd.ms-excel')
+        filename = kw.replace(' ', '_') + '.xls'
+    else:
+        writer = csv.writer(f, dialect='excel')
+        writer.writerows(groups)
+        response.set_header('Content-Type', 'text/csv; charset=UTF-8')
+        filename = kw.replace(' ', '_') + '.csv'
+    response.add_header('Content-Disposition', 'attachment; filename="%s"' % (filename))
     return f.getvalue()
 
 
