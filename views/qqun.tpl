@@ -5,23 +5,13 @@
         <base href="/" />
         <style type="text/css">
             body {
-                font-family: 'Helvetica Neue',Helvetica,'Nimbus Sans L','Segoe UI',Arial,'Liberation Sans','Hiragino Sans GB','Source Han Sans CN','Source Han Sans SC','Microsoft YaHei UI','Microsoft YaHei','Wenquanyi Micro Hei','WenQuanYi Zen Hei','ST Heiti',SimHei,sans-serif;
+                font-family: 'Open Sans','Helvetica Neue',Helvetica,'Nimbus Sans L','Segoe UI',Arial,'Liberation Sans','Hiragino Sans GB','Source Han Sans CN','Source Han Sans SC','Microsoft YaHei UI','Microsoft YaHei','Wenquanyi Micro Hei','WenQuanYi Zen Hei','ST Heiti',SimHei,sans-serif;
             }
 
             .wrapper {
                 width: 100%;
                 margin: 100px 0 0;
                 text-align: center;
-            }
-
-            .avatar {
-                display: block;
-                width: 100px;
-                height: 100px;
-                margin: 0 auto 25px;
-                -webkit-border-radius: 50%;
-                -moz-border-radius: 50%;
-                border-radius: 50%;
             }
 
             .qr_login {
@@ -50,6 +40,7 @@
                 width: 100px;
                 height: 100px;
                 margin: 0 auto;
+                background: url('/static/img/progress.gif') center center no-repeat;
                 cursor: pointer;
             }
 
@@ -111,6 +102,10 @@
                 width: 20em;
             }
 
+            .alacarte form input[type=submit] {
+                cursor: pointer;
+            }
+
             .man {
                 margin-top: 100px;
             }
@@ -147,9 +142,9 @@
         <div class="wrapper">
              <div class="qr_login">
                 <span id="qr_area" class="qr_area">
-                    <img id="qrcode" class="qrcode" src="/getqrcode" alt="QR Code" title="双击可刷新" ondblclick="qrRefresh()" />
-                    <span id="login_success" class="login_success" ondblclick="qrRefresh()">
-                        <i class="fa fa-check" aria-hidden="true" title="登录成功，双击可刷新"></i>
+                    <img id="qrcode" class="qrcode" src="" alt="" title="点击可刷新" onclick="qrRefresh()" />
+                    <span id="login_success" class="login_success" onclick="qrRefresh()">
+                        <i class="fa fa-check" aria-hidden="true" title="登录成功，点击可刷新"></i>
                     </span>
                     <span id="qr_invalid" class="qr_invalid" onclick="qrRefresh()">
                         <i class="fa fa-refresh" aria-hidden="true" title="二维码失效，请点击刷新"></i>
@@ -173,13 +168,15 @@
                             <input type="radio" id="pn_5" name="pn" value="5" checked="checked" />40&nbsp;&nbsp;
                             <input type="radio" id="pn_10" name="pn" value="10" />80&nbsp;&nbsp;
                             <input type="radio" id="pn_15" name="pn" value="15" />120&nbsp;&nbsp;
-                            <input type="radio" id="pn_20" name="pn" value="20" />160
+                            <input type="radio" id="pn_20" name="pn" value="20" />160&nbsp;&nbsp;
+                            <input type="radio" id="pn_20" name="pn" value="25" />200
                         </label>
                     </p>
                     <p>
                         <label for="ft">
                             <strong>导出格式</strong>
                             <input type="radio" id="ft_xls" name="ft" value="xls" checked="checked" />Excel (.xls)&nbsp;
+                            <input type="radio" id="ft_xlsx" name="ft" value="xlsx" />Excel (.xlsx)&nbsp;
                             <input type="radio" id="ft_csv" name="ft" value="csv" />CSV (UTF-8)
                         </label>
                     </p>
@@ -193,6 +190,7 @@
                 </form>
             </div>
         </div>
+        <a href="https://github.com/caspartse/QQ-Groups-Spider" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/static/img/forkme_right_green_007200.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
         <script type="text/javascript">
             function httpGetAsync(url, callback) {
                 var xmlHttp = new XMLHttpRequest();
@@ -215,7 +213,7 @@
                         $('#tips').text('二维码认证中...');
                         break;
                     case 2:
-                        $('#login_success').css('display', 'inline-block');$('#tips').text('登录成功，双击可刷新');
+                        $('#login_success').css('display', 'inline-block');$('#tips').text('登录成功，点击可刷新');
                         break;
                     default:
                         $('#qr_invalid').css('display', 'inline-block');$('#tips').text('二维码失效，请点击刷新');
@@ -234,6 +232,7 @@
             }
 
             function qrRefresh() {
+                $('#qrcode').attr('src', '');
                 var src = '/getqrcode?r=' + Math.random();
                 $('#qrcode').attr('src', src);
                 $('#login_success').css('display', 'none');
@@ -249,7 +248,7 @@
             }
 
             (function () {
-                qrLoginQuery();
+                qrRefresh();
             })();
         </script>
     </body>
