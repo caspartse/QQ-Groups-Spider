@@ -206,6 +206,8 @@
             function changeStatus(obj) {
                 var status = JSON.parse(obj).status;
                 switch (status) {
+                    case -1:
+                        break;
                     case 0:
                         $('#tips').text('手机 QQ 扫描二维码');
                         break;

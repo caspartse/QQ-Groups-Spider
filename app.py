@@ -13,6 +13,8 @@ import urllib
 from io import BytesIO
 import pyexcel as pe
 import unicodecsv as csv
+import re
+#import sae
 
 
 app = Bottle()
@@ -34,29 +36,36 @@ class QQGroups(object):
             'Referer': 'http://ui.ptlogin2.qq.com/cgi-bin/login?appid=715030901&daid=73&pt_no_auth=1&s_url=http%3A%2F%2Fqqun.qq.com%2Fgroup%2Findex.html%3Fkeyword%3Dtencent',
         }
         self.session.headers.update(headers)
+        self.js_ver = '10171'
 
     def getQRCode(self):
         try:
             url = 'http://ui.ptlogin2.qq.com/cgi-bin/login?appid=715030901&daid=73&pt_no_auth=1&s_url=http%3A%2F%2Fqqun.qq.com%2Fgroup%2Findex.html%3Fkeyword%3Dtencent'
             self.session.get(url, timeout=200)
-            url = 'http://ptlogin2.qq.com/ptqrshow?appid=715030901&e=2&l=M&s=3&d=72&v=4&t=%.16f&daid=73' % (
+            try:
+                pattern = r'http://imgcache\.qq\.com/ptlogin/ver/(\d+)/'
+                self.js_ver = re.search(pattern, resp.content).group(1)
+            except:
+                pass
+            url = 'http://ptlogin2.qq.com/ptqrshow?appid=715030901&e=2&l=M&s=3&d=72&v=4&t=%.17f&daid=73' % (
                 random())
             resp = self.session.get(url, timeout=200)
             response.set_header('Content-Type', 'image/png')
             response.add_header('Cache-Control', 'no-cache, no-store')
             response.add_header('Pragma', 'no-cache')
         except:
-            pass
+            resp = None
         return resp
 
     def qrLogin(self):
         u1 = 'http%3A%2F%2Fqqun.qq.com%2Fgroup%2Findex.html%3Fkeyword%3Dtencent'
         login_sig = self.session.cookies.get_dict().get('pt_login_sig', '')
-        url = 'http://ptlogin2.qq.com/ptqrlogin?u1=%s&ptredirect=1&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-%d&js_ver=10167&js_type=1&login_sig=%s&pt_uistyle=40&aid=715030901&daid=73&' % (
-            u1, time() * 1000, login_sig)
+        url = 'http://ptlogin2.qq.com/ptqrlogin?u1=%s&ptredirect=1&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-%d&js_ver=%s&js_type=1&login_sig=%s&pt_uistyle=40&aid=715030901&daid=73&' % (
+            u1, time() * 1000, self.js_ver, login_sig)
         try:
-            res = self.session.get(url, timeout=200)
-            result = res.content
+            errorMsg = ''
+            resp = self.session.get(url, timeout=200)
+            result = resp.content
             if '二维码未失效' in result:
                 status = 0
             elif '二维码认证中' in result:
@@ -67,10 +76,22 @@ class QQGroups(object):
                 status = 3
             else:
                 status = 4
+                errorMsg = str(result.text)
         except:
             status = -1
-        resp = json.dumps({'status': status, 'time': time()})
+            try:
+                errorMsg = resp.status_code
+            except:
+                pass
+        loginResult = {
+            'status': status,
+            'time': time(),
+            'errorMsg': errorMsg,
+        }
+        resp = json.dumps(loginResult)
         response.set_header('Content-Type', 'application/json; charset=UTF-8')
+        response.add_header('Cache-Control', 'no-cache; must-revalidate')
+        response.add_header('Expires', '-1')
         return resp
 
     def genbkn(self, skey):
@@ -94,8 +115,8 @@ class QQGroups(object):
                 # sort type: 1 deafult, 2 menber, 4 active
                 url = 'http://qqun.qq.com/cgi-bin/qun_search/search_group?k=%s&t=&c=1&p=%s&n=8&st=%s&d=1&r=%.17f&bkn=%s&s=3&v=0' % (
                     urllib.quote(kw), page, st, random(), self.genbkn(skey))
-                res = self.session.get(url, timeout=100)
-                result = res.json()
+                resp = self.session.get(url, timeout=100)
+                result = resp.json()
                 gList = result.get('gList')
                 for item in gList:
                     gName = item['gName'].strip()
@@ -107,7 +128,7 @@ class QQGroups(object):
                     groups.append(gMeta)
                 sleep(2.5)
         except Exception, e:
-            #return e
+            # return e
             if len(groups) == 1:
                 redirect('/qqun')
         f = BytesIO()
