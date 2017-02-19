@@ -5,13 +5,23 @@
         <base href="/" />
         <style type="text/css">
             body {
-                font-family: 'Open Sans','Helvetica Neue',Helvetica,'Nimbus Sans L','Segoe UI',Arial,'Liberation Sans','Hiragino Sans GB','Source Han Sans CN','Source Han Sans SC','Microsoft YaHei UI','Microsoft YaHei','Wenquanyi Micro Hei','WenQuanYi Zen Hei','ST Heiti',SimHei,sans-serif;
+                font-family: 'Helvetica Neue', Helvetica, 'Nimbus Sans L', 'Segoe UI', Arial, 'Liberation Sans', 'Source Han Sans CN', 'Source Han Sans SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Wenquanyi Micro Hei', 'WenQuanYi Zen Hei', 'ST Heiti', SimHei, sans-serif;
             }
 
             .wrapper {
                 width: 100%;
                 margin: 100px 0 0;
                 text-align: center;
+            }
+
+            .avatar {
+                display: block;
+                width: 100px;
+                height: 100px;
+                margin: 0 auto 25px;
+                -webkit-border-radius: 50%;
+                -moz-border-radius: 50%;
+                border-radius: 50%;
             }
 
             .qr_login {
@@ -37,6 +47,8 @@
             }
 
             .qrcode {
+                display: inline-block;
+                vertical-align: top;
                 width: 100px;
                 height: 100px;
                 margin: 0 auto;
@@ -47,6 +59,7 @@
             .login_success,
             .qr_invalid {
                 display: none;
+                vertical-align: top;
                 position: relative;
                 top: -100px;
                 width: 100px;
@@ -60,10 +73,11 @@
             .login_success .fa,
             .qr_invalid .fa {
                 display: inline-block;
-                margin: -5px 0 0;
+                height: 100px;
                 overflow: hidden;
                 font-size: 60px;
                 line-height: 100px;
+                overflow: hidden;
             }
 
             .login_success .fa-check {
@@ -72,6 +86,10 @@
 
             .qr_invalid .fa-refresh {
                 color: #F39800;
+            }
+
+            .tips {
+                color: #000;
             }
 
             .alacarte {
@@ -99,15 +117,35 @@
             }
 
             .alacarte form input[type=text] {
-                width: 20em;
+                width: 16.25em;
             }
 
             .alacarte form input[type=submit] {
                 cursor: pointer;
+                margin-left: 1em;
             }
 
-            .man {
+            label strong {
+                display: inline-block;
+                margin-right: .75em;
+            }
+
+            .footer {
                 margin-top: 100px;
+            }
+
+            .footer a {
+                display: inline-block;
+                margin: 0 .75em;
+                text-decoration: none!important;
+            }
+
+            .footer a:first-child {
+                color: #42C02E!important;
+            }
+
+            .footer a:last-child {
+                color: #FD6062!important;
             }
 
             a,
@@ -150,7 +188,7 @@
                         <i class="fa fa-refresh" aria-hidden="true" title="二维码失效，请点击刷新"></i>
                     </span>
                 </span>
-                <p id="tips">手机 QQ 扫描二维码</p>
+                <p id="tips" class="tips">手机 QQ 扫描二维码</p>
             </div>
             <div class="alacarte">
                 <form method="post" action="/qqun" onsubmit="qrLoginCheck()">

@@ -32,18 +32,18 @@ class QQGroups(object):
         super(QQGroups, self).__init__()
         self.session = requests.Session()
         headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:50.0) Gecko/20100101 Firefox/50.0',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0',
             'Referer': 'http://ui.ptlogin2.qq.com/cgi-bin/login?appid=715030901&daid=73&pt_no_auth=1&s_url=http%3A%2F%2Fqqun.qq.com%2Fgroup%2Findex.html%3Fkeyword%3Dtencent',
         }
         self.session.headers.update(headers)
-        self.js_ver = '10171'
+        self.js_ver = '10196'
 
     def getQRCode(self):
         try:
             url = 'http://ui.ptlogin2.qq.com/cgi-bin/login?appid=715030901&daid=73&pt_no_auth=1&s_url=http%3A%2F%2Fqqun.qq.com%2Fgroup%2Findex.html%3Fkeyword%3Dtencent'
             self.session.get(url, timeout=200)
             try:
-                pattern = r'http://imgcache\.qq\.com/ptlogin/ver/(\d+)/'
+                pattern = r'ptuiV\("(\d+)"\);'
                 self.js_ver = re.search(pattern, resp.content).group(1)
             except:
                 pass
@@ -60,8 +60,14 @@ class QQGroups(object):
     def qrLogin(self):
         u1 = 'http%3A%2F%2Fqqun.qq.com%2Fgroup%2Findex.html%3Fkeyword%3Dtencent'
         login_sig = self.session.cookies.get_dict().get('pt_login_sig', '')
-        url = 'http://ptlogin2.qq.com/ptqrlogin?u1=%s&ptredirect=1&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-%d&js_ver=%s&js_type=1&login_sig=%s&pt_uistyle=40&aid=715030901&daid=73&' % (
-            u1, time() * 1000, self.js_ver, login_sig)
+        qrsig = self.session.cookies.get_dict().get('qrsig', '')
+        url = 'http://ptlogin2.qq.com/ptqrlogin?u1=%s&ptqrtoken=%s&ptredirect=1&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-%d&js_ver=%s&js_type=1&login_sig=%s&pt_uistyle=40&aid=715030901&daid=73&' % (
+            u1,
+            self.hash33(qrsig),
+            time() * 1000,
+            self.js_ver,
+            login_sig
+        )
         try:
             errorMsg = ''
             resp = self.session.get(url, timeout=200)
@@ -94,6 +100,13 @@ class QQGroups(object):
         response.add_header('Expires', '-1')
         return resp
 
+    def hash33(self, t):
+        e = 0
+        for i in xrange(0, len(t)):
+            e += (e << 5) + ord(t[i])
+        t = (e & 2147483647)
+        return str(t)
+
     def genbkn(self, skey):
         b = 5381
         for i in xrange(0, len(skey)):
@@ -114,7 +127,12 @@ class QQGroups(object):
             for page in xrange(0, pn):
                 # sort type: 1 deafult, 2 menber, 4 active
                 url = 'http://qqun.qq.com/cgi-bin/qun_search/search_group?k=%s&t=&c=1&p=%s&n=8&st=%s&d=1&r=%.17f&bkn=%s&s=3&v=0' % (
-                    urllib.quote(kw), page, st, random(), self.genbkn(skey))
+                    urllib.quote(kw),
+                    page,
+                    st,
+                    random(),
+                    self.genbkn(skey)
+                )
                 resp = self.session.get(url, timeout=100)
                 result = resp.json()
                 gList = result.get('gList')
@@ -146,7 +164,8 @@ class QQGroups(object):
             response.set_header('Content-Type', 'text/csv; charset=UTF-8')
             filename = kw.replace(' ', '_') + '.csv'
             response.add_header('Content-Disposition',
-                                'attachment; filename="%s"' % (filename))
+                                'attachment; filename="%s"' % (filename)
+                                )
             return f.getvalue()
         elif ft == 'xlsx':
             import tempfile
@@ -165,8 +184,12 @@ class QQGroups(object):
                 worksheet.write(row, col + 4, gIntro)
                 row += 1
             workbook.close()
-            resp = static_file(filename, root=tempfile.gettempdir(),  download=filename,
-                               mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            resp = static_file(
+                filename,
+                root=tempfile.gettempdir(),
+                download=filename,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
             return resp
 
 
@@ -199,8 +222,8 @@ def qrLogin():
     return q.qrLogin()
 
 ### Local ###
-#run(app, host='localhost', port=8080, debug=True)
-run(app, server='eventlet', host='localhost', port=8080, debug=True)
+run(app, server='paste', host='localhost', port=8080, debug=True, reloader=True)
+#run(app, host='localhost', port=8080, debug=True, reloader=True)
 
 ### SAE ###
 # debug(True)
