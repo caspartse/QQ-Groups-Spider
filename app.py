@@ -309,4 +309,4 @@ if __name__ == '__main__':
     # https://bottlepy.org/docs/dev/deployment.html#switching-the-server-backend
     # run(app, host='localhost', port=8080, debug=True, reloader=True)
     run(app, server='paste', host='localhost',
-        port=8082, debug=True, reloader=True)
+        port=8080, debug=True, reloader=True)
