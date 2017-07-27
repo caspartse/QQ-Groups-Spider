@@ -171,9 +171,9 @@
                 text-decoration: underline;
             }
         </style>
-        <link href="/static/css/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-        <script type="text/javascript" src="/static/js/jquery.min.js?v=2.2.4"></script>
-        <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+        <link href="/static/css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="/static/js/jquery.min.js?v=3.2.1"></script>
+        <link href="/static/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
         <title>QQ Groups Spider</title>
     </head>
     <body>
@@ -191,31 +191,31 @@
                 <p id="tips" class="tips">手机 QQ 扫描二维码</p>
             </div>
             <div class="alacarte">
-                <form method="post" action="/qqun" onsubmit="qrLoginCheck()">
+                <form method="post" action="/qqun" onsubmit="loginCheck()">
                     <p>
                         <label for="st">
                             <strong>排序方式</strong>
-                            <input type="radio" id="st_2" name="st" value="2" checked="checked" />群人数
-                            <input type="radio" id="st_4" name="st" value="4" />群活跃度
-                            <input type="radio" id="st_1" name="st" value="1" />默认
+                            <input type="radio" id="sort_1" name="sort" value="0" checked="checked" />默认
+                            <input type="radio" id="sort_2" name="sort" value="1" />群人数
+                            <input type="radio" id="sort_4" name="sort" value="2" />群活跃度
                         </label>
                     </p>
                     <p>
                         <label for="pn">
                             <strong>抓取数量</strong>
-                            <input type="radio" id="pn_5" name="pn" value="5" checked="checked" />40&nbsp;&nbsp;
-                            <input type="radio" id="pn_10" name="pn" value="10" />80&nbsp;&nbsp;
-                            <input type="radio" id="pn_15" name="pn" value="15" />120&nbsp;&nbsp;
-                            <input type="radio" id="pn_20" name="pn" value="20" />160&nbsp;&nbsp;
-                            <input type="radio" id="pn_20" name="pn" value="25" />200
+                            <input type="radio" id="pn_5" name="pn" value="5" checked="checked" />120&nbsp;&nbsp;
+                            <input type="radio" id="pn_10" name="pn" value="10" />240&nbsp;&nbsp;
+                            <input type="radio" id="pn_15" name="pn" value="15" />360&nbsp;&nbsp;
+                            <input type="radio" id="pn_20" name="pn" value="20" />480
                         </label>
                     </p>
                     <p>
                         <label for="ft">
                             <strong>导出格式</strong>
-                            <input type="radio" id="ft_xls" name="ft" value="xls" checked="checked" />Excel (.xls)&nbsp;
-                            <input type="radio" id="ft_xlsx" name="ft" value="xlsx" />Excel (.xlsx)&nbsp;
-                            <input type="radio" id="ft_csv" name="ft" value="csv" />CSV (UTF-8)
+                            <input type="radio" id="ft_xls" name="ft" value="xls" checked="checked" />XLS&nbsp;
+                            <input type="radio" id="ft_xlsx" name="ft" value="xlsx" />XLSX&nbsp;
+                            <input type="radio" id="ft_csv" name="ft" value="csv" />CSV (UTF-8)&nbsp;
+                            <input type="radio" id="ft_json" name="ft" value="json" />JSON
                         </label>
                     </p>
                     <p>
@@ -230,22 +230,9 @@
         </div>
         <a href="https://github.com/caspartse/QQ-Groups-Spider" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/static/img/forkme_right_green_007200.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
         <script type="text/javascript">
-            function httpGetAsync(url, callback) {
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                        callback(xmlHttp.responseText);
-                    }
-                };
-                xmlHttp.open("GET", url, true);
-                xmlHttp.send(null);
-            }
-
-            function changeStatus(obj) {
-                var status = JSON.parse(obj).status;
+            var _auth = false;
+            function changeStatus(status) {
                 switch (status) {
-                    case -1:
-                        break;
                     case 0:
                         $('#tips').text('手机 QQ 扫描二维码');
                         break;
@@ -254,24 +241,39 @@
                         break;
                     case 2:
                         $('#login_success').css('display', 'inline-block');$('#tips').text('登录成功，点击可刷新');
+                        _auth = true;
+                        break;
+                    case 3:
+                        $('#qr_invalid').css('display', 'inline-block');$('#tips').text('二维码失效，请点击刷新');
+                        _auth = false;
                         break;
                     default:
-                        $('#qr_invalid').css('display', 'inline-block');$('#tips').text('二维码失效，请点击刷新');
+                        console.log(status);
                 }
             }
 
             function qrLoginQuery() {
                 function trigger() {
-                    var url = '/qrlogin?r=' + (new Date().getTime());
-                    httpGetAsync(url, changeStatus);
-                    if ($('#login_success').css('display') != 'none' || $('#qr_invalid').css('display') != 'none') {
-                        clearInterval(queryTimmer);
-                    }
+                    var url = '/qrlogin?t=' + (new Date().getTime());
+                    $.ajax({
+                        url: url,
+                        cache: false,
+                        dataType: "json",
+                        success: function(obj) {
+                            var status = JSON.parse(JSON.stringify(obj)).status;
+                            changeStatus(status);
+                            if ([2, 3].includes(status)) {
+                                clearInterval(window.queryTimmer);
+                            }
+                        }
+                    });
                 }
-                var queryTimmer = setInterval(trigger, 2000);
+                window.queryTimmer = setInterval(trigger, 2000);
             }
 
             function qrRefresh() {
+                _auth = false;
+                clearInterval(window.queryTimmer);
                 $('#qrcode').attr('src', '');
                 var src = '/getqrcode?r=' + Math.random();
                 $('#qrcode').attr('src', src);
@@ -281,8 +283,8 @@
                 qrLoginQuery();
             }
 
-            function qrLoginCheck() {
-                if ($('#login_success').css('display') == 'none') {
+            function loginCheck() {
+                if (!_auth) {
                     alert('请先授权登录');
                 }
             }

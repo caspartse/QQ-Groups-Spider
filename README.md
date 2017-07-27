@@ -1,23 +1,22 @@
-# QQ-Groups-Spider
-
-**2017-07-25 更新：QQ 接口升级，本项目暂不可用，2.0 版本将在近期释出，敬请期待。**
+# QQ-Groups-Spider (v0.2.0)
 
 QQ Groups Spider（QQ 群爬虫）
 
-批量抓取 QQ 群信息，包括群名称、群号、群人数、群主、群简介等内容，最终生成 XLS(X) / CSV 结果文件。
+批量抓取 QQ 群信息，包括群名称、群号、群人数、群主、地域、分类、标签、群简介等内容，最终生成 XLS(X) / CSV 结果文件。
 
-# 代码说明
+## 代码说明
 
-### 运行环境
+### 测试环境
 
+* BunsenLabs GNU/Linux 8.7 (Hydrogen)
 * Python (2.7)
-* [bottle](http://bottlepy.org/) (0.12.9)
 
 ### 第三方库支持
 
+* [bottle](http://bottlepy.org/)
 * [requests](http://python-requests.org)
-* [pyexcel](https://github.com/pyexcel/pyexcel)
-* [XlsxWriter](https://github.com/jmcnamara/XlsxWriter)
+* [pyexcel-xls](https://github.com/pyexcel/pyexcel-xls)
+* [XlsxWriter](https://github.com/jmcnamara/XlsxWriter)（可选）
 * [unicodecsv](https://github.com/jdunck/python-unicodecsv)
 
 ### 本地运行
@@ -30,7 +29,7 @@ QQ Groups Spider（QQ 群爬虫）
 
 *(P.S. SAE 上 XlsxWriter 不可用。)*
 
-# Demo
+## Demo
 
 ### 在线演示
 
@@ -39,13 +38,14 @@ QQ Groups Spider（QQ 群爬虫）
 ### 截图示例
 
 
-![](http://7xslb5.com1.z0.glb.clouddn.com/QQ-Groups-Spider-Demo01.jpg)
+![](https://raw.githubusercontent.com/caspartse/QQ-Groups-Spider/master/screenshots/screenshot_01.jpg)
 
 
-![](http://7xslb5.com1.z0.glb.clouddn.com/QQ-Groups-Spider-Demo02.jpg)
+![](https://raw.githubusercontent.com/caspartse/QQ-Groups-Spider/master/screenshots/screenshot_02.jpg)
 
-# 更新日志
+## 更新日志
 
-* 2016-02-19  0.1.2 更新二维码验证参数。
-* 2016-08-19  0.1.1 改善代码逻辑，加入 XlsxWriter 模块，增加本地运行支持。
-* 2016-07-23  0.1.0 初始化。
+* 2017-07-27  v0.2.0 更换新接口；优化模板页面；增加群上限、地域、分类、标签等字段；新增导出 JSON 格式。
+* 2016-02-19  v0.1.2 更新二维码验证参数。
+* 2016-08-19  v0.1.1 改善代码逻辑；加入 XlsxWriter 模块；增加本地运行支持。
+* 2016-07-23  v0.1.0 初始化。
