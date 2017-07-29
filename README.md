@@ -1,5 +1,7 @@
 # QQ-Groups-Spider (v0.2.0)
 
+[![Join the chat at https://gitter.im/QQ-Groups-Spider/Lobby](https://badges.gitter.im/QQ-Groups-Spider/Lobby.svg)](https://gitter.im/QQ-Groups-Spider/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 QQ Groups Spider（QQ 群爬虫）
 
 批量抓取 QQ 群信息，包括群名称、群号、群人数、群主、地域、分类、标签、群简介等内容，最终生成 XLS(X) / CSV 结果文件。
