@@ -8,12 +8,18 @@ from bottle import *
 import requests
 from time import time, sleep
 from random import random
-import simplejson as json
+try:
+    import ujson as json
+except ImportError:
+    import simplejson as json
 from io import BytesIO
 import pyexcel as pe
 import unicodecsv as csv
 import re
 #import sae
+
+
+sourceURL = 'http://find.qq.com/index.html?version=1&im_version=5533&width=910&height=610&search_target=0'
 
 
 class QQGroups(object):
@@ -35,8 +41,14 @@ class QQGroups(object):
     def getQRCode(self):
         self.newSession()
         try:
-            url = 'http://ui.ptlogin2.qq.com/cgi-bin/login?appid=715030901&daid=73&pt_no_auth=1&s_url=http%3A%2F%2Ffind.qq.com%2Findex.html%3Fversion%3D1%26im_version%3D5533%26width%3D910%26height%3D610%26search_target%3D0'
-            resp = self.sess.get(url, timeout=1000)
+            url = 'http://ui.ptlogin2.qq.com/cgi-bin/login'
+            params = {
+                'appid': '715030901',
+                'daid': '73',
+                'pt_no_auth': '1',
+                's_url': sourceURL
+            }
+            resp = self.sess.get(url, params=params, timeout=1000)
             pattern = r'imgcache\.qq\.com/ptlogin/ver/(\d+)/js'
             try:
                 self.js_ver = re.search(pattern, resp.content).group(1)
@@ -70,7 +82,7 @@ class QQGroups(object):
         if all([login_sig, qrsig]):
             url = 'http://ptlogin2.qq.com/ptqrlogin'
             params = {
-                'u1': 'http://find.qq.com/index.html?version=1&im_version=5533&width=910&height=610&search_target=0',
+                'u1': sourceURL,
                 'ptqrtoken': self.genqrtoken(qrsig),
                 'ptredirect': '1',
                 'h': '1',
@@ -101,7 +113,7 @@ class QQGroups(object):
                     errorMsg = str(result.text)
             except:
                 try:
-                    errorMsg = resp.status_code
+                    errorMsg = str(resp.status_code)
                 except:
                     pass
         loginResult = {
@@ -122,11 +134,7 @@ class QQGroups(object):
         kw = request.forms.get('kw').strip()
         if not kw:
             redirect('/qqun')
-        self.sess.headers.update(
-            {
-                'Referer': 'http://find.qq.com/index.html?version=1&im_version=5533&width=910&height=610&search_target=0'
-            }
-        )
+        self.sess.headers.update({'Referer': sourceURL})
         skey = self.sess.cookies.get_dict().get('skey', '')
         groups = [(u'群名称', u'群号', u'群人数', u'群上限',
                    u'群主', u'地域', u'分类', u'标签', u'群简介')]
@@ -156,7 +164,7 @@ class QQGroups(object):
                 if resp.status_code != 200:
                     print '%s\n%s' % (resp.status_code, resp.text)
                 result = json.loads(resp.content)
-                gList = result.get('group_list')
+                gList = result['group_list']
                 gListRaw.extend(gList)
                 for g in gList:
                     name = self.rmWTS(g['name'])
@@ -307,6 +315,8 @@ def qrLogin():
 ### Local ###
 if __name__ == '__main__':
     # https://bottlepy.org/docs/dev/deployment.html#switching-the-server-backend
-    # run(app, host='localhost', port=8080, debug=True, reloader=True)
-    run(app, server='paste', host='localhost',
-        port=8080, debug=True, reloader=True)
+    try:
+        run(app, server='paste', host='localhost',
+            port=8080, debug=True, reloader=True)
+    except:
+        run(app, host='localhost', port=8080, debug=True, reloader=True)
