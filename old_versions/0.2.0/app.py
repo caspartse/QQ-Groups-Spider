@@ -16,11 +16,9 @@ from io import BytesIO
 import pyexcel as pe
 import unicodecsv as csv
 import re
-import zipfile
-from uuid import uuid4
 #import sae
 
-attachments = {}
+
 sourceURL = 'http://find.qq.com/index.html?version=1&im_version=5533&width=910&height=610&search_target=0'
 
 
@@ -133,94 +131,125 @@ class QQGroups(object):
         sort = request.forms.get('sort')
         pn = int(request.forms.get('pn'))
         ft = request.forms.get('ft')
-        kws = request.forms.get('kws').strip()
-        if not kws:
+        kw = request.forms.get('kw').strip()
+        if not kw:
             redirect('/qqun')
-        kws = re.sub(r'[\r\n]', '\t', kws)
-        kws = [k.strip() for k in kws.split('\t') if k.strip()]
         self.sess.headers.update({'Referer': sourceURL})
         skey = self.sess.cookies.get_dict().get('skey', '')
+        groups = [(u'群名称', u'群号', u'群人数', u'群上限',
+                   u'群主', u'地域', u'分类', u'标签', u'群简介')]
+        gListRaw = []
         try:
-            buff = BytesIO()
-            zip_archive = zipfile.ZipFile(buff, mode='w')
-            temp = []
-            for i in xrange(len(kws)):
-                temp.append(BytesIO())
-            for i, kw in enumerate(kws[:10]):
-                groups = [(u'群名称', u'群号', u'群人数', u'群上限',
-                           u'群主', u'地域', u'分类', u'标签', u'群简介')]
-                gListRaw = []
-                for page in xrange(0, pn):
-                    # sort type: 0 deafult, 1 menber, 2 active
-                    url = 'http://qun.qq.com/cgi-bin/group_search/pc_group_search'
-                    data = {
-                        'k': u'交友',
-                        'n': '8',
-                        'st': '1',
-                        'iso': '1',
-                        'src': '1',
-                        'v': '4903',
-                        'bkn': self.genbkn(skey),
-                        'isRecommend': 'false',
-                        'city_id': '0',
-                        'from': '1',
-                        'keyword': kw,
-                        'sort': sort,
-                        'wantnum': '24',
-                        'page': page,
-                        'ldw': self.genbkn(skey)
-                    }
-                    resp = self.sess.post(url, data=data, timeout=1000)
-                    if resp.status_code != 200:
-                        print '%s\n%s' % (resp.status_code, resp.text)
-                    result = json.loads(resp.content)
-                    gList = result['group_list']
-                    gListRaw.extend(gList)
-                    for g in gList:
-                        name = self.rmWTS(g['name'])
-                        code = g['code']
-                        member_num = g['member_num']
-                        max_member_num = g['max_member_num']
-                        owner_uin = g['owner_uin']
-                        qaddr = ' '.join(g['qaddr'])
-                        try:
-                            gcate = ' | '.join(g['gcate'])
-                        except:
-                            gcate = ''
-                        try:
-                            _labels = [l.get('label', '') for l in g['labels']]
-                            labels = self.rmWTS(' | '.join(_labels))
-                        except:
-                            labels = ''
-                        memo = self.rmWTS(g['memo'])
-                        gMeta = (name, code, member_num, max_member_num,
-                                 owner_uin, qaddr, gcate, labels, memo)
-                        groups.append(gMeta)
-                    if len(gList) == 1:
-                        break
-                    sleep(2.5)
-                if ft == 'xls':
-                    sheet = pe.Sheet(groups)
-                    sheet.save_to_memory('xls', temp[i])
-                elif ft == 'csv':
-                    writer = csv.writer(
-                        temp[i], dialect='excel', encoding='utf-8')
-                    writer.writerows(groups)
-                elif ft == 'json':
-                    json.dump(gListRaw, temp[i], indent=4, sort_keys=True)
-            for i in xrange(len(kws)):
-                zip_archive.writestr(kws[i].decode(
-                    'utf-8') + '.' + ft, temp[i].getvalue())
-            zip_archive.close()
-            resultId = uuid4().hex
-            attachments.update({resultId: buff})
-            response.set_header('Content-Type', 'text/html; charset=UTF-8')
-            response.add_header('Cache-Control', 'no-cache; must-revalidate')
-            response.add_header('Expires', '-1')
-            return resultId
+            for page in xrange(0, pn):
+                # sort type: 0 deafult, 1 menber, 2 active
+                url = 'http://qun.qq.com/cgi-bin/group_search/pc_group_search'
+                data = {
+                    'k': u'交友',
+                    'n': '8',
+                    'st': '1',
+                    'iso': '1',
+                    'src': '1',
+                    'v': '4903',
+                    'bkn': self.genbkn(skey),
+                    'isRecommend': 'false',
+                    'city_id': '0',
+                    'from': '1',
+                    'keyword': kw,
+                    'sort': sort,
+                    'wantnum': '24',
+                    'page': page,
+                    'ldw': self.genbkn(skey)
+                }
+                resp = self.sess.post(url, data=data, timeout=1000)
+                if resp.status_code != 200:
+                    print '%s\n%s' % (resp.status_code, resp.text)
+                result = json.loads(resp.content)
+                gList = result['group_list']
+                gListRaw.extend(gList)
+                for g in gList:
+                    name = self.rmWTS(g['name'])
+                    code = g['code']
+                    member_num = g['member_num']
+                    max_member_num = g['max_member_num']
+                    owner_uin = g['owner_uin']
+                    qaddr = ' '.join(g['qaddr'])
+                    try:
+                        gcate = ' | '.join(g['gcate'])
+                    except:
+                        gcate = ''
+                    try:
+                        _labels = [l.get('label', '') for l in g['labels']]
+                        labels = self.rmWTS(' | '.join(_labels))
+                    except:
+                        labels = ''
+                    memo = self.rmWTS(g['memo'])
+                    gMeta = (name, code, member_num, max_member_num,
+                             owner_uin, qaddr, gcate, labels, memo)
+                    groups.append(gMeta)
+                sleep(2.5)
         except Exception, e:
             print e
-            abort(500,)
+        if len(groups) == 1:
+            redirect('/qqun')
+        f = BytesIO()
+        if ft == 'xls':
+            sheet = pe.Sheet(groups)
+            f = sheet.save_to_memory('xls', f)
+            response.set_header('Content-Type', 'application/vnd.ms-excel')
+            filename = kw.replace(' ', '_') + '.xls'
+            response.add_header(
+                'Content-Disposition',
+                'attachment; filename="%s"' % (filename)
+            )
+            return f.getvalue()
+        elif ft == 'xlsx':
+            import tempfile
+            import xlsxwriter
+            filename = kw.replace(' ', '_') + '.xlsx'
+            workbook = xlsxwriter.Workbook(
+                tempfile.gettempdir() + '/' + filename)
+            worksheet = workbook.add_worksheet()
+            row = 0
+            col = 0
+            for a, b, c, d, e, f, g, h, i in groups:
+                worksheet.write(row, col, a)
+                worksheet.write(row, col + 1, b)
+                worksheet.write(row, col + 2, c)
+                worksheet.write(row, col + 3, d)
+                worksheet.write(row, col + 4, e)
+                worksheet.write(row, col + 5, f)
+                worksheet.write(row, col + 6, g)
+                worksheet.write(row, col + 7, h)
+                worksheet.write(row, col + 8, i)
+                row += 1
+            workbook.close()
+            resp = static_file(
+                filename,
+                root=tempfile.gettempdir(),
+                download=filename,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+            return resp
+        elif ft == 'csv':
+            writer = csv.writer(f, dialect='excel', encoding='utf-8')
+            writer.writerows(groups)
+            response.set_header('Content-Type', 'text/csv; charset=UTF-8')
+            filename = kw.replace(' ', '_') + '.csv'
+            response.add_header(
+                'Content-Disposition',
+                'attachment; filename="%s"' % (filename)
+            )
+            return f.getvalue()
+        elif ft == 'json':
+            json.dump(gListRaw, f, indent=4, sort_keys=True)
+            response.set_header(
+                'Content-Type', 'application/json; charset=UTF-8')
+            filename = kw.replace(' ', '_') + '.json'
+            response.add_header(
+                'Content-Disposition',
+                'attachment; filename="%s"' % (filename)
+            )
+            return f.getvalue()
 
     def genqrtoken(self, qrsig):
         e = 0
@@ -276,19 +305,6 @@ def getQRCode():
 @app.route('/qrlogin')
 def qrLogin():
     return q.qrLogin()
-
-
-@app.route('/download')
-def download():
-    resultId = request.query.rid or ''
-    f = attachments.get(resultId, '')
-    if f:
-        response.set_header('Content-Type', 'application/zip')
-        response.add_header('Content-Disposition',
-                            'attachment; filename="results.zip"')
-        return f.getvalue()
-    else:
-        abort(404)
 
 
 ### SAE ###

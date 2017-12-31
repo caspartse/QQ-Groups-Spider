@@ -6,7 +6,7 @@
     <base href="/" />
     <style type="text/css">
     body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-family: 'Helvetica Neue', Helvetica, 'Nimbus Sans L', 'Segoe UI', Arial, 'Liberation Sans', 'Source Han Sans CN', 'Source Han Sans SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Wenquanyi Micro Hei', 'WenQuanYi Zen Hei', 'ST Heiti', SimHei, sans-serif;
     }
 
     .wrapper {
@@ -16,13 +16,13 @@
     }
 
     .qr_login {
-        display: block;
-        width: 360px;
+        display: inline-block;
+        width: 180px;
+        border-right: solid 1px #DDD;
         text-align: center;
         font-size: 14px;
         vertical-align: middle;
         color: #666;
-        margin: 0 auto;
     }
 
     .qr_login p {
@@ -83,19 +83,13 @@
         color: #000;
     }
 
-    label strong {
-        display: inline-block;
-        margin-right: .75em;
-    }
-
     .alacarte {
-        display: block;
-        width: 360px;
+        display: inline-block;
+        padding-left: 40px;
         text-align: left;
         line-height: 2em;
         vertical-align: middle;
         cursor: default;
-        margin: 20px auto 0;
     }
 
     .alacarte p {
@@ -122,47 +116,15 @@
         margin-left: 1em;
     }
 
-    .kwbox {
-        display: block;
-        width: 360px;
-        text-align: left;
-        vertical-align: top;
-        cursor: default;
-        margin: 20px auto 0;
-    }
-
-    .kwbox textarea {
-        width: 342px;
-        height: 200px;
-        display: block;
-        text-align: left;
-        padding: 8px;
-        resize: none;
-        border: solid 1px #DDD;
-        font-size: 14px;
-        line-height: 20px;
-    }
-
-    .kwbox textarea:focus {
-        outline: none;
-        outline-style: none;
-        -moz-outline-style: none;
-    }
-
-    .kwbox p {
+    label strong {
         display: inline-block;
-        width: 100%;
-    }
-
-    .kwbox input {
-        float: right;
-        cursor: pointer;
+        margin-right: .75em;
     }
     </style>
     <link href="/static/css/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="/static/js/jquery.min.js?v=3.2.1"></script>
     <link href="/static/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-    <title>QQ Groups Spider (v0.3.0)</title>
+    <title>QQ Groups Spider</title>
 </head>
 
 <body>
@@ -179,8 +141,8 @@
             </div>
             <p id="tips" class="tips">手机 QQ 扫描二维码</p>
         </div>
-        <form id="the_form" action="" method="">
-            <div class="alacarte">
+        <div class="alacarte">
+            <form method="post" action="/qqun" onsubmit="loginCheck()">
                 <p>
                     <label for="sort">
                         <strong>排序方式</strong>
@@ -202,18 +164,20 @@
                     <label for="ft">
                         <strong>导出格式</strong>
                         <input type="radio" id="ft_xls" name="ft" value="xls" checked="checked" />XLS&nbsp;
+                        <input type="radio" id="ft_xlsx" name="ft" value="xlsx" />XLSX&nbsp;
                         <input type="radio" id="ft_csv" name="ft" value="csv" />CSV (UTF-8)&nbsp;
                         <input type="radio" id="ft_json" name="ft" value="json" />JSON
                     </label>
                 </p>
-            </div>
-            <div class="kwbox">
-                <textarea rows="20" cols="10" id="kws" name="kws" placeholder="输入关键词，以回车换行分隔，最多10个" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" wrap="soft"></textarea>
                 <p>
+                    <label for="kw">
+                        <strong>群关键词</strong>
+                        <input type="text" id="kw" name="kw" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                    </label>
                     <input value="Submit" type="submit" />
-                </P>
-            </div>
-        </form>
+                </p>
+            </form>
+        </div>
     </div>
     <a href="https://github.com/caspartse/QQ-Groups-Spider" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/static/img/forkme_right_green_007200.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
     <script type="text/javascript">
@@ -273,33 +237,14 @@
         qrLoginQuery();
     }
 
+    function loginCheck() {
+        if (!_auth) {
+            alert('请先授权登录');
+        }
+    }
+
     (function() {
         qrRefresh();
-        $("#the_form").submit(function(e) {
-            e.preventDefault();
-            if (!_auth) {
-                alert('请先授权登录');
-            } else {
-                $(".kwbox p").css("background", "url('/static/img/ajax-loader.gif') center center no-repeat");
-                $("input[type=submit]").prop("disabled", true);
-                $.ajax({
-                    type: "POST",
-                    url: "/qqun",
-                    data: $(this).serializeArray(),
-                    success: function(obj) {
-                        $(".kwbox p").css("background", "");
-                        $("input[type=submit]").prop("disabled", false);
-                        var path = '/download?rid=' + obj;
-                        window.open(path);
-                    },
-                    error: function() {
-                        $(".kwbox p").css("background", "");
-                        $("input[type=submit]").prop("disabled", false);
-                    }
-                });
-            }
-            return false;
-        });
     })();
     </script>
 </body>
