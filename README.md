@@ -4,11 +4,13 @@ QQ Groups Spider（QQ 群爬虫）
 
 批量抓取 QQ 群信息，包括群名称、群号、群人数、群主、地域、分类、标签、群简介等内容，返回 XLS / CSV / JSON 结果文件。
 
+
 ## 代码说明
 
 ### 测试环境
 
 * BunsenLabs GNU/Linux 8.9 (Hydrogen)
+* Windows XP Service Pack 3 (on VirtualBox)
 * Python (2.7)
 
 ### 第三方库支持
@@ -16,15 +18,12 @@ QQ Groups Spider（QQ 群爬虫）
 * [bottle](http://bottlepy.org/)
 * [requests](http://python-requests.org)
 * [simplejson](https://github.com/simplejson/simplejson)
-* [UltraJSON](https://github.com/esnme/ultrajson)（SAE 上不可用）
 * [pyexcel-xls](https://github.com/pyexcel/pyexcel-xls)
 * [unicodecsv](https://github.com/jdunck/python-unicodecsv)
-
 
 ### 本地运行
 
 ``` $ python app.py```
-
 
 ### SAE 上运行
 
@@ -39,9 +38,7 @@ QQ Groups Spider（QQ 群爬虫）
 
 ### 截图示例
 
-
 ![](https://raw.githubusercontent.com/caspartse/QQ-Groups-Spider/master/screenshots/screenshot_01.png)
-
 
 ![](https://raw.githubusercontent.com/caspartse/QQ-Groups-Spider/master/screenshots/screenshot_02.png)
 
@@ -49,6 +46,7 @@ QQ Groups Spider（QQ 群爬虫）
 ## 致谢
 
 @小木哥1
+
 
 ## 更新日志
 
