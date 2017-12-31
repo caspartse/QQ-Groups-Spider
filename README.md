@@ -46,8 +46,6 @@ QQ Groups Spider（QQ 群爬虫）
 ![](https://raw.githubusercontent.com/caspartse/QQ-Groups-Spider/master/screenshots/screenshot_02.png)
 
 
-![](https://raw.githubusercontent.com/caspartse/QQ-Groups-Spider/master/screenshots/screenshot_03.png)
-
 ## 致谢
 
 @小木哥1
