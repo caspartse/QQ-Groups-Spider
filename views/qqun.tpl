@@ -290,7 +290,7 @@
                         $(".kwbox p").css("background", "");
                         $("input[type=submit]").prop("disabled", false);
                         var path = '/download?rid=' + obj;
-                        window.open(path);
+                        window.open(path, "_blank");
                     },
                     error: function() {
                         $(".kwbox p").css("background", "");
