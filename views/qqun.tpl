@@ -278,7 +278,7 @@
         $("#the_form").submit(function(e) {
             e.preventDefault();
             if (!_auth) {
-                alert('请先授权登录');
+                alert('请先扫码授权登录');
             } else {
                 $(".kwbox p").css("background", "url('/static/img/ajax-loader.gif') center center no-repeat");
                 $("input[type=submit]").prop("disabled", true);
